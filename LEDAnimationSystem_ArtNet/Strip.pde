@@ -1,4 +1,4 @@
-// Strip.pde
+
 // Class to manage the LED strip
 
 class Strip {

@@ -1,6 +1,3 @@
-// ArtNetDevice.pde
-// Class to manage ArtNet communication with LED hardware
-
 import ch.bildspur.artnet.*;
 
 class ArtNetDevice {

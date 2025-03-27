@@ -1,7 +1,3 @@
-// LEDAnimationSystem.pde
-// Main file for the LED Animation System
-// Converted from web version to Processing with ArtNet support
-
 import controlP5.*;
 import ch.bildspur.artnet.*;
 

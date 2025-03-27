@@ -1,4 +1,4 @@
-// Grid.pde
+
 // Class to manage the 8x4 grid of LEDs
 
 class Grid {

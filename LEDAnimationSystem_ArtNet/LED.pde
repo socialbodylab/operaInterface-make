@@ -1,4 +1,4 @@
-// LED.pde
+
 // Class to represent a single LED in the system
 
 class LED {
