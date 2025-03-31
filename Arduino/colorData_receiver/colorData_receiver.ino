@@ -10,11 +10,11 @@ IPAddress gateway(192,168,137, 1);
 IPAddress subnet(255, 255, 255, 0);
 
 // Neopixel settings
+const int LEDbrightness = 50;
 const int badgeLEDs = 32; 
 const int numberOfChannels_badge = badgeLEDs * 3; 
 const byte badgeDataPin = 32;
 Adafruit_NeoPixel badge = Adafruit_NeoPixel(badgeLEDs, badgeDataPin, NEO_GRB + NEO_KHZ800);
-
 
 //Neopixel collar settings
 const int collarLEDs = 30;
@@ -22,11 +22,13 @@ const int numberOfChannels_collar = collarLEDs * 3;
 const byte collarDataPin = 12;
 Adafruit_NeoPixel collar = Adafruit_NeoPixel(collarLEDs, collarDataPin, NEO_GRB + NEO_KHZ800);
 
-
-
 // Artnet settings
 ArtnetWifi artnet;
 
+// Buffering for smoother updates
+uint8_t badgeBuffer[badgeLEDs * 3];
+uint8_t collarBuffer[collarLEDs * 3];
+bool dataReady = false;
 
 // function prototypes
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
@@ -40,17 +42,50 @@ void setup()
   badge.begin();
   collar.begin();
 
-  // this will be called for each packet received
+  // Set brightness
+    badge.setBrightness(LEDbrightness);
+    collar.setBrightness(LEDbrightness);
+
+  // This will be called for each packet received
   artnet.setArtDmxCallback(onDmxFrame);
 }
 
 void loop()
 {
-  // we call the read function inside the loop
+  // We call the read function inside the loop
   artnet.read();
+  
+  // If new data has arrived, update the LEDs
+  if(dataReady) {
+    
+    
+    // Update badge LEDs from buffer
+    for(int i = 0; i < badgeLEDs; i++) {
+      badge.setPixelColor(i, 
+                         badgeBuffer[i * 3], 
+                         badgeBuffer[i * 3 + 1], 
+                         badgeBuffer[i * 3 + 2]);
+    }
+    
+    // Update collar LEDs from buffer
+    for(int i = 0; i < collarLEDs; i++) {
+      collar.setPixelColor(i, 
+                          collarBuffer[i * 3], 
+                          collarBuffer[i * 3 + 1], 
+                          collarBuffer[i * 3 + 2]);
+    }
+    
+    // Show the pixels
+    badge.show();
+    collar.show();
+    
+    // Reset the data flag
+    dataReady = false;
+  }
 }
-// connect to wifi – returns true if successful or false if not
-bool ConnectWifi(void)
+
+// Connect to wifi – returns true if successful or false if not
+bool ConnectWifi()
 {
   bool state = true;
   int i = 0;
@@ -88,33 +123,24 @@ bool ConnectWifi(void)
   return state;
 }
 
-
-
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {
-
-  badge.setBrightness(20);
-  collar.setBrightness(20);
-
-  // read universe and put into the right part of the display buffer
-  for (int i = 0; i < badgeLEDs; i++)
-  {
+  // Process badge data (first portion of the data array)
+  int maxBadgeBytes = min((int)length, badgeLEDs * 3);
+  for (int i = 0; i < maxBadgeBytes; i++) {
+    badgeBuffer[i] = data[i];
+  }
+  
+  // Process collar data (remaining portion of the data array)
+  if(length > badgeLEDs * 3) {
+    int collarDataStart = badgeLEDs * 3;
+    int maxCollarBytes = min((int)length - collarDataStart, collarLEDs * 3);
     
-      badge.setPixelColor(i, data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+    for(int i = 0; i < maxCollarBytes; i++) {
+      collarBuffer[i] = data[collarDataStart + i];
+    }
   }
- 
-
-  //set led colors for collar
-  int collarStart = 0;
-  for (int i = badgeLEDs; i < badgeLEDs + collarLEDs; i++)
-  {
-    collar.setPixelColor(collarStart, data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
-    collarStart++;
-  }
-
-  //show the pixels
-    badge.show();
-    collar.show();
-
-
+  
+  // Set the data ready flag
+  dataReady = true;
 }
