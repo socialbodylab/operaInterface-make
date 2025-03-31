@@ -27,7 +27,7 @@ float gridSpeed = 1.0;
 float stripSpeed = 0.5;
 
 // Strip LED count
-int stripCount = 72;
+int stripCount = 30;
 
 // Linear fade angle for grid
 float gridLinearAngle = 0;

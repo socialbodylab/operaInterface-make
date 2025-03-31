@@ -204,7 +204,7 @@ void setupStripControlGroup(float yPos) {
     .setPosition(230, 280) // Aligned with effect dropdown
     .setSize(190, 20)
     .setRange(1, 300)
-    .setValue(72)
+    .setValue(stripCount)
     .setMultiplier(1)
     .setDirection(Controller.HORIZONTAL)
     .setLabel("NUMBER OF LEDS")
