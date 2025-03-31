@@ -17,7 +17,7 @@ Adafruit_NeoPixel badge = Adafruit_NeoPixel(badgeLEDs, badgeDataPin, NEO_GRB + N
 
 
 //Neopixel collar settings
-const int collarLEDs = 72;
+const int collarLEDs = 30;
 const int numberOfChannels_collar = collarLEDs * 3;
 const byte collarDataPin = 12;
 Adafruit_NeoPixel collar = Adafruit_NeoPixel(collarLEDs, collarDataPin, NEO_GRB + NEO_KHZ800);
