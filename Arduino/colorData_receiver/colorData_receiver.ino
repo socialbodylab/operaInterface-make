@@ -30,6 +30,12 @@ uint8_t badgeBuffer[badgeLEDs * 3];
 uint8_t collarBuffer[collarLEDs * 3];
 bool dataReady = false;
 
+// FPS calculation variables
+unsigned long frameCount = 0;
+unsigned long packetCount = 0;
+unsigned long lastFpsTime = 0;
+const unsigned long fpsInterval = 1000; // Update FPS every second
+
 // function prototypes
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
 bool ConnectWifi(void);
@@ -43,11 +49,16 @@ void setup()
   collar.begin();
 
   // Set brightness
-    badge.setBrightness(LEDbrightness);
-    collar.setBrightness(LEDbrightness);
+  badge.setBrightness(LEDbrightness);
+  collar.setBrightness(LEDbrightness);
+
+  // Initialize timing for FPS calculation
+  lastFpsTime = millis();
 
   // This will be called for each packet received
   artnet.setArtDmxCallback(onDmxFrame);
+  
+  Serial.println("Setup complete. Monitoring FPS...");
 }
 
 void loop()
@@ -55,10 +66,32 @@ void loop()
   // We call the read function inside the loop
   artnet.read();
   
+  // Calculate and display FPS every second
+  unsigned long currentTime = millis();
+  if (currentTime - lastFpsTime >= fpsInterval) {
+    float framesFps = frameCount * 1000.0 / (currentTime - lastFpsTime);
+    float packetsFps = packetCount * 1000.0 / (currentTime - lastFpsTime);
+    
+    Serial.print("FPS - LED Updates: ");
+    Serial.print(framesFps, 1);
+    Serial.print(", Art-Net Packets: ");
+    Serial.print(packetsFps, 1);
+    
+    // Add more system info
+    Serial.print(", Free Heap: ");
+    Serial.print(ESP.getFreeHeap());
+    Serial.print(" bytes, WiFi RSSI: ");
+    Serial.print(WiFi.RSSI());
+    Serial.println(" dBm");
+    
+    // Reset counters
+    frameCount = 0;
+    packetCount = 0;
+    lastFpsTime = currentTime;
+  }
+  
   // If new data has arrived, update the LEDs
   if(dataReady) {
-    
-    
     // Update badge LEDs from buffer
     for(int i = 0; i < badgeLEDs; i++) {
       badge.setPixelColor(i, 
@@ -78,6 +111,9 @@ void loop()
     // Show the pixels
     badge.show();
     collar.show();
+    
+    // Increment frame counter for FPS calculation
+    frameCount++;
     
     // Reset the data flag
     dataReady = false;
@@ -140,6 +176,9 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
       collarBuffer[i] = data[collarDataStart + i];
     }
   }
+  
+  // Increment packet counter for FPS calculation
+  packetCount++;
   
   // Set the data ready flag
   dataReady = true;
