@@ -1,6 +1,10 @@
 #include <ArtnetWifi.h>
-#include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
+
+// Battery monitoring settings
+#define VBATPIN A13
+const unsigned long batteryCheckInterval = 10000; // Check battery every 10 seconds
+unsigned long lastBatteryCheck = 0;
 
 //Wifi settings
 const char* ssid = "rur";
@@ -45,6 +49,14 @@ const unsigned long reconnectInterval = 5000; // Try to reconnect every 5 second
 unsigned long lastReconnectAttempt = 0;
 bool wifiConnected = false;
 
+// Function to check battery level
+float checkBatteryLevel() {
+  float measuredvbat = analogReadMilliVolts(VBATPIN);
+  measuredvbat *= 2;    // we divided by 2, so multiply back
+  measuredvbat /= 1000; // convert to volts!
+  return measuredvbat;
+}
+
 // function prototypes
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data);
 bool ConnectWifi(void);
@@ -65,6 +77,13 @@ void setup()
   // Initialize timing for FPS calculation
   lastFpsTime = millis();
   lastPacketTime = millis();
+  lastBatteryCheck = millis();
+
+  // Initial battery level check
+  float batteryLevel = checkBatteryLevel();
+  Serial.print("Initial Battery Level: ");
+  Serial.print(batteryLevel);
+  Serial.println(" V");
 
   // This will be called for each packet received
   artnet.setArtDmxCallback(onDmxFrame);
@@ -80,8 +99,17 @@ void loop()
   // We call the read function inside the loop
   artnet.read();
   
-  // Calculate and display FPS every second
+  // Check battery level periodically
   unsigned long currentTime = millis();
+  if (currentTime - lastBatteryCheck >= batteryCheckInterval) {
+    float batteryLevel = checkBatteryLevel();
+    Serial.print("Battery Level: ");
+    Serial.print(batteryLevel);
+    Serial.println(" V");
+    lastBatteryCheck = currentTime;
+  }
+  
+  // Calculate and display FPS every second
   if (currentTime - lastFpsTime >= fpsInterval) {
     float framesFps = frameCount * 1000.0 / (currentTime - lastFpsTime);
     float packetsFps = packetCount * 1000.0 / (currentTime - lastFpsTime);
