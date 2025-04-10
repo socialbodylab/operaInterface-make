@@ -8,11 +8,14 @@ class Strip {
   
   // Position of the strip on screen
   float xPos = 50;
-  float yPos = 350; // Positioned closer to the grid to save vertical space
+  float yPos; // Will be set dynamically based on grid position
   float width;
   
   Strip(int count) {
     this.count = count;
+    
+    // Set yPos based on grid position (to be below grid)
+    yPos = ledGrid.yPos + ledGrid.height + 30;
     
     // Calculate total width needed for all LEDs
     float totalWidth = (ledSize + spacing) * count;

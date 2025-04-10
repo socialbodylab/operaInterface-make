@@ -7,7 +7,7 @@ class Grid {
   
   // Position of the grid on screen
   float xPos = 50;
-  float yPos = 40; // Moved up to create more space for controls below
+  float yPos = 150; // Moved down further to provide more space below network controls
   float width, height;
   
   Grid(int cols, int rows) {

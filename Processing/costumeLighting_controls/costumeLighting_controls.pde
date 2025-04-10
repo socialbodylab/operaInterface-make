@@ -35,8 +35,9 @@ float gridLinearAngle = 0;
 // ArtNet settings
 ArtNetDevice artnetDevice;
 String deviceIP = "192.168.137.10";  // Default IP address from the Arduino code
-int universe = 0;                    // Default universe from the Arduino code
+int universe = 0;                    // Default universe (hardcoded now)
 boolean artNetEnabled = true;        // Enable/disable ArtNet sending
+boolean isConnected = false;         // Track connection status
 
 // LED Brightness (0-255)
 int ledBrightness = 50;  // Default value matching Arduino code
@@ -47,21 +48,21 @@ int targetFPS = 30;  // Default target FPS
 int frameInterval = 1000/targetFPS;  // Frame interval in milliseconds
 
 // Window dimensions
-int windowWidth = 1080;    // Narrower window
-int windowHeight = 1000;   // Original height
+int windowWidth = 1080;    // Window width
+int windowHeight = 1000;   // Window height
 
 void setup() {
-  size(1080, 1050);  // Narrower window, original height
+  size(1080, 1100);  // Window size
   background(245);
   
   // Initialize UI
   cp5 = new ControlP5(this);
   
-  // Initialize LEDs
+  // Initialize LEDs - Grid must be initialized before Strip
   ledGrid = new Grid(8, 4);
   ledStrip = new Strip(stripCount);
   
-  // Initialize UI controls
+  // Initialize UI controls - must be after LED initialization
   setupControls();
   
   // Apply styling to color wheels
@@ -70,14 +71,18 @@ void setup() {
   // Initialize animation timer
   startTime = millis();
   
-  // Initialize ArtNet device (badge = 32 LEDs, collar = 72 LEDs = 104 total)
+  // Initialize ArtNet device (badge = 32 LEDs, collar = 30 LEDs by default)
   if (artNetEnabled) {
     try {
       artnetDevice = new ArtNetDevice(universe, deviceIP, 32 + stripCount);
       println("ArtNet initialized: " + deviceIP + " on universe " + universe);
+      isConnected = true;
+      updateStatusLabel();
     } catch (Exception e) {
       println("Error initializing ArtNet: " + e.getMessage());
       artNetEnabled = false;
+      isConnected = false;
+      updateStatusLabel();
     }
   }
   
@@ -205,18 +210,9 @@ void controlEvent(ControlEvent event) {
   else if (name.equals("gridLinearAngle")) {
     gridLinearAngle = event.getController().getValue();
   }
-  // ArtNet enabled toggle changed
-  else if (name.equals("artNetEnabled")) {
-    artNetEnabled = event.getController().getValue() > 0.5;
-    updateArtNetStatus();
-  }
   // Device IP changed
   else if (name.equals("deviceIP")) {
     deviceIP = cp5.get(Textfield.class, "deviceIP").getText();
-  }
-  // Universe changed
-  else if (name.equals("universe")) {
-    universe = int(event.getController().getValue());
   }
   // Connect button pressed
   else if (name.equals("connectArtNet")) {
@@ -226,7 +222,6 @@ void controlEvent(ControlEvent event) {
   else if (name.equals("targetFPS")) {
     targetFPS = int(event.getController().getValue());
     frameInterval = 1000/targetFPS;
-    updateArtNetStatus(); // Update status display with new FPS
   }
   // Brightness changed
   else if (name.equals("ledBrightness")) {
@@ -242,39 +237,34 @@ void connectArtNet() {
     artnetDevice = null;
   }
   
-  if (artNetEnabled) {
-    try {
-      // Create a new ArtNet device with current settings
-      artnetDevice = new ArtNetDevice(universe, deviceIP, 32 + stripCount);
-      updateArtNetStatus();
-    } catch (Exception e) {
-      println("Error connecting to ArtNet: " + e.getMessage());
-      Textlabel statusLabel = cp5.get(Textlabel.class, "artnetStatus");
-      if (statusLabel != null) {
-        statusLabel.setText("Status: Error - " + e.getMessage());
-      }
-    }
+  try {
+    // Create a new ArtNet device with current settings and hardcoded universe 0
+    artnetDevice = new ArtNetDevice(0, deviceIP, 32 + stripCount);
+    artNetEnabled = true;
+    isConnected = true;
+    updateStatusLabel();
+  } catch (Exception e) {
+    println("Error connecting to ArtNet: " + e.getMessage());
+    isConnected = false;
+    artNetEnabled = false;
+    updateStatusLabel();
   }
 }
 
-void updateArtNetStatus() {
-  Textlabel statusLabel = cp5.get(Textlabel.class, "artnetStatus");
-  if (statusLabel == null) return;
-  
-  String status = "Status: ";
-  
-  if (!artNetEnabled) {
-    status += "Disabled";
-  } else if (artnetDevice != null && artnetDevice.connected) {
-    status += "Connected to " + deviceIP + " on universe " + universe;
-  } else {
-    status += "Not Connected";
+// Update the host IP display if necessary
+void updateStatusLabel() {
+  // We removed the status text from UI as requested
+  // Update IP text color based on connection
+  Textfield ipField = cp5.get(Textfield.class, "deviceIP");
+  if (ipField != null) {
+    if (isConnected) {
+      // Add green highlight when connected
+      ipField.setColorBackground(color(0, 65, 0));
+    } else {
+      // Default color when not connected
+      ipField.setColorBackground(color(0, 45, 90));
+    }
   }
-  
-  // Add FPS information
-  status += " | Target: " + targetFPS + " FPS";
-  
-  statusLabel.setText(status);
 }
 
 // Clean shutdown - important for ArtNet

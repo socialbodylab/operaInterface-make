@@ -13,7 +13,7 @@ class ArtNetDevice {
   byte brightnessValue = 50; // Default brightness
   
   ArtNetDevice(int universe, String deviceIP, int totalLEDs) {
-    this.universe = universe;
+    this.universe = universe; // Always set to 0 now by the caller
     this.deviceIP = deviceIP;
     
     // Initialize the byte array to hold brightness byte + RGB data for all LEDs
@@ -71,9 +71,11 @@ class ArtNetDevice {
   void sendData() {
     if (connected) {
       try {
+        // Universe is always 0 now (hardcoded)
         artnet.unicastDmx(deviceIP, universe, 0, combinedData);
       } catch (Exception e) {
         println("Error sending ArtNet data: " + e.getMessage());
+        connected = false;
       }
     }
   }
