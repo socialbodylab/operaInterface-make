@@ -18,7 +18,7 @@ void setupControls() {
   setupStripControlGroup(controlsY);
   
   // Create group for ArtNet settings - minimal distance from Grid/Strip controls
-  setupArtNetControlGroup(controlsY + 450); // Position ArtNet group closer to previous controls
+  setupArtNetControlGroup(controlsY + 440); // Position ArtNet group closer to previous controls
 }
 
 void setupGridControlGroup(float yPos) {
@@ -30,7 +30,7 @@ void setupGridControlGroup(float yPos) {
     .setPosition(20, yPos)  // Left side, adjusted for narrower window
     .setWidth(groupWidth)
     .setBackgroundHeight(400) // Slightly reduced height for better fit
-    .setBackgroundColor(color(240))
+    .setBackgroundColor(color(250))
     .setBarHeight(25)
     .setColorBackground(color(60, 60, 100))
     .setColorLabel(color(255))

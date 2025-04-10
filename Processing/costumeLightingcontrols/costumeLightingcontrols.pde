@@ -51,7 +51,7 @@ int windowWidth = 1080;    // Narrower window
 int windowHeight = 1000;   // Original height
 
 void setup() {
-  size(1080, 1000);  // Narrower window, original height
+  size(1080, 1050);  // Narrower window, original height
   background(245);
   
   // Initialize UI
