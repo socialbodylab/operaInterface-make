@@ -385,10 +385,37 @@ void setupDebugGroup(float yPos) {
 }
 
 // Utility function to get the host IP address
+// Improved to work on both Windows and Mac OS
 String getHostIP() {
   try {
-    return java.net.InetAddress.getLocalHost().getHostAddress();
+    // First try the getLocalHost approach (works well on Windows)
+    String ip = java.net.InetAddress.getLocalHost().getHostAddress();
+    
+    // If we got the loopback address (127.0.0.1 or similar), try an alternative method
+    if (ip.startsWith("127.")) {
+      // Try to find a non-loopback IPv4 address (works better on Mac OS)
+      java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+      while (interfaces.hasMoreElements()) {
+        java.net.NetworkInterface networkInterface = interfaces.nextElement();
+        // Skip loopback and inactive interfaces
+        if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+          continue;
+        }
+        
+        // Look through all IP addresses assigned to this interface
+        java.util.Enumeration<java.net.InetAddress> addresses = networkInterface.getInetAddresses();
+        while (addresses.hasMoreElements()) {
+          java.net.InetAddress addr = addresses.nextElement();
+          // Only consider IPv4 addresses that aren't loopback
+          if (!addr.isLoopbackAddress() && addr instanceof java.net.Inet4Address) {
+            return addr.getHostAddress();
+          }
+        }
+      }
+    }
+    return ip; // Return the original IP if we couldn't find a better one
   } catch (Exception e) {
+    println("Error getting IP address: " + e.getMessage());
     return "Unknown";
   }
 }
