@@ -62,7 +62,7 @@ float gridLinearAngle = 0;
 
 // ArtNet settings
 ArtNetDevice artnetDevice;
-String deviceIP = "192.168.1.10";  // Default IP address from the Arduino code
+String deviceIP = "192.168.1.100";  // Default IP address from the Arduino code
 int universe = 0;                    // Default universe (hardcoded now)
 boolean artNetEnabled = true;        // Enable/disable ArtNet sending
 boolean isConnected = false;         // Track connection status
