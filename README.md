@@ -19,7 +19,7 @@ The installation has 2 main components
 1. Install the current OpenJDK version for your system
     - Download OpenJDK for [Windows](https://adoptium.net/temurin/releases/?os=windows&arch=x64&package=jdk)
     - Download OpenJDK for [MacOS](https://adoptium.net/temurin/releases/?os=mac&arch=aarch64&package=jdk)
-2. Download the the appropriate release for your system
+2. Download the [appropriate Release](https://github.com/socialbodylab/operaInterface-make/releases/tag/1.0.0) for your system
 3. Unzip the folder and run the application
 
 #### Running from Processing
