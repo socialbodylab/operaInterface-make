@@ -1,5 +1,16 @@
 # Costume Lighting Controls
 
+## Table of Contents
+- [Installation](#installation)
+  - [Control Application](#control-application)
+    - [Using the Release Build](#using-the-release-build)
+    - [Running from Processing](#running-from-processing)
+  - [Hardware Receiver](#hardware-receiver)
+- [Setup](#setup)
+  - [Get Network IP Info](#get-network-ip-info)
+  - [Update the Arduino Code](#update-the-arduino-code)
+    - [To determine the LOCAL_IP and GATEWAY](#to-determine-the-local_ip-and-gateway)
+    - [Alternative IP Range Example](#alternative-ip-range-example)
 
 ## Installation
 
