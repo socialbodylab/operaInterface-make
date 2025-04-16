@@ -1,5 +1,6 @@
 # Costume Lighting Controls
 
+
 ## Installation
 
 The installation has 2 main components
@@ -14,6 +15,10 @@ The installation has 2 main components
 
 
 ### Control Application
+
+| Controller Interface | WiFi Settings |
+|:-------------------:|:-------------:|
+| <img src="images/CostumeController.png" width="400"> | <img src="images/WifiSettings.png" width="400"> |
 
 #### Using the Release Build
 1. Install the current OpenJDK version for your system
@@ -75,5 +80,17 @@ const int UNIVERSE = 0;                  // Art-Net universe to listen on *No ne
 ```
 #### To determine the **LOCAL_IP** and **GATEWAY**
 1. Use the IP address of the controller as the staring point. In our case it is: **192.168.1.2**
+2. This means that the base address in this scenario is **192.168.1**
+3. Generally your router has address 1 within this range so ***GATEWAY(192, 168, 1, 1)***
+4. Next choose a number to assign to the device. Generally choose a number
+    between 1-255. There are likely devices on your network, so choose a higher number.
+    In this case we chose 100, so ***LOCAL_IP(192, 168, 1, 100)***
+
+#### Alternative IP Range Example
+1. For example, your Controller IP might look like: **10.0.0.25**
+2. This means your base address would be **10.0.0**
+3. Following the same logic, your router is likely **10.0.0.1**, so ***GATEWAY(10, 0, 0, 1)***
+ 4. Choose a device number between 1-255 (avoiding low numbers), 
+    for example 100: ***LOCAL_IP(10, 0, 0, 100)***
 
 
