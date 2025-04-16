@@ -11,6 +11,7 @@
   - [Update the Arduino Code](#update-the-arduino-code)
     - [To determine the LOCAL_IP and GATEWAY](#to-determine-the-local_ip-and-gateway)
     - [Alternative IP Range Example](#alternative-ip-range-example)
+- [Materials and Parts](#materials-and-parts)
 
 ## Installation
 
@@ -103,5 +104,18 @@ const int UNIVERSE = 0;                  // Art-Net universe to listen on *No ne
 3. Following the same logic, your router is likely **10.0.0.1**, so ***GATEWAY(10, 0, 0, 1)***
  4. Choose a device number between 1-255 (avoiding low numbers), 
     for example 100: ***LOCAL_IP(10, 0, 0, 100)***
+
+## Materials and Parts
+
+| Name | Quantity per wearable |
+|------|----------------------|
+| [Adafruit ESP32 Feather V2 - 8MB Flash + 2 MB PSRAM - STEMMA QT](https://www.adafruit.com/product/5400) | 1 |
+| [Short Feather Male Headers x 2 sets](https://www.adafruit.com/product/3002) | 2 |
+| [FeatherWing Doubler](https://www.adafruit.com/product/2890) | 1 |
+| [Neopixel FeatherWing](https://www.adafruit.com/product/2945) | 1 |
+| [Adafruit NeoPixel LED Strip with 3-pin JST PH 2mm Connector - 60 LED/meter / 0.5 Meter](https://www.adafruit.com/product/3919) | 1 |
+| [Lithium-Ion Polymer (LiPo) Battery (3.7V 1200mAh)](https://www.adafruit.com/product/2011) | 1 |
+| [Breadboard-friendly SPDT Slide Switch](https://www.adafruit.com/product/805) | 1 |
+| [JST PH 2mm 3-Pin Socket to Color Coded Cable - 200mm](https://www.adafruit.com/product/4046) | 1 |
 
 
