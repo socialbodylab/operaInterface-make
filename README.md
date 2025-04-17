@@ -1,5 +1,7 @@
 # Costume Lighting Controls
 
+![Controller Hardware](images/ControllerHardware.jpg)
+
 ## Table of Contents
 - [Installation](#installation)
   - [Control Application](#control-application)
